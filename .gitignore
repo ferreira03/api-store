@@ -1,0 +1,58 @@
+# Dependencies
+/vendor/
+composer.lock
+
+# Environment files
+.env
+.env.*
+!.env.example
+
+# IDE and Editor files
+.idea/
+.vscode/
+*.sublime-project
+*.sublime-workspace
+*.swp
+*.swo
+.DS_Store
+
+# Logs
+/var/logs/*
+*.log
+php_errors.log
+
+# Cache and temporary files
+/var/cache/*
+*.cache
+*.tmp
+
+# Testing
+.phpunit.result.cache
+phpunit.xml
+
+# Docker
+.docker/
+docker-compose.override.yml
+
+# Build and dist files
+/build/
+/dist/
+
+# Database
+/var/database/*
+*.sqlite
+*.sqlite3
+*.db
+
+# Application specific
+/storage/
+/uploads/
+/config/*.local.php 
+
+# PHPStan
+.phpstan.cache
+.phpstan.neon.local
+
+# PHP-CS-Fixer
+.php-cs-fixer.cache
+.php-cs-fixer.php.local

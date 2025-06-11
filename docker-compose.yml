@@ -1,0 +1,33 @@
+services:
+  # PHP Service
+  php:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: api-store-php
+    restart: unless-stopped
+    working_dir: /var/www/html
+    volumes:
+      - ./src:/var/www/html/src
+      - ./config:/var/www/html/config
+      - ./public:/var/www/html/public
+      - ./var:/var/www/html/var
+    networks:
+      - api-store-network
+
+  # Nginx Service
+  nginx:
+    image: nginx:alpine
+    container_name: api-store-nginx
+    restart: unless-stopped
+    ports:
+      - "8000:80"
+    volumes:
+      - ./public:/var/www/html
+      - ./docker/nginx:/etc/nginx/conf.d
+    networks:
+      - api-store-network
+
+networks:
+  api-store-network:
+    driver: bridge 
