@@ -20,11 +20,12 @@ COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 # Set working directory
 WORKDIR /var/www/html
 
-# Copy project files
-COPY . /var/www/html
-
-# Install dependencies
-RUN composer install
+# Create necessary directories
+RUN mkdir -p /var/www/html/public \
+    /var/www/html/src \
+    /var/www/html/config \
+    /var/www/html/var \
+    /var/www/html/vendor
 
 # Set permissions
 RUN chown -R www-data:www-data /var/www/html
