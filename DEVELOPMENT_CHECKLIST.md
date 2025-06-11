@@ -10,10 +10,10 @@ Tasks:
 [*] Setup Docker (docker-compose.yml, Dockerfile)
 [*] Define initial folder structure (`src/`, `public/`, `tests/`, etc.)
 [*] Setup Composer with PSR-4 autoload
-[ ] Install initial dependencies (FastRoute, PHP-DI, etc.)
-[ ] Basic routing setup
-[ ] Install and configure PHPStan for static analysis
-[ ] Install and configure PHP-CS-Fixer for code style
+[*] Install initial dependencies (FastRoute, PHP-DI, etc.)
+[*] Basic routing setup
+[*] Install and configure PHPStan for static analysis
+[*] Install and configure PHP-CS-Fixer for code style
 
 ---
 
@@ -81,14 +81,13 @@ Tasks:
 ## 📁 Documentation & Standards
 
 Tasks:
-[ ] Write `README.md`
-[ ] Write `architecture.md`
-[ ] Write `best-practices.md`
-[ ] Write `technical-stack.md`
-[ ] Write `folder-structure.md`
-[ ] Write `testing.md`
-[ ] Write `api-documentation.md` with Swagger
-[ ] Create or configure `phpcs-ruleset.xml` with PSR-12
+[*] Write `README.md`
+[*] Write `architecture.md`
+[*] Write `best-practices.md`
+[*] Write `technical-stack.md`
+[*] Write `folder-structure.md`
+[*] Write `testing.md`
+[*] Write `api-documentation.md` with Swagger
 
 ---
 
