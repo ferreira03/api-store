@@ -31,7 +31,11 @@
     },
     "scripts": {
         "phpstan": "phpstan analyse",
-        "cs-check": "php-cs-fixer fix --dry-run --diff",
-        "cs-fix": "php-cs-fixer fix"
+        "phpstan:baseline": "phpstan analyse --generate-baseline=phpstan-baseline.neon",
+        "phpstan:check-baseline": "phpstan analyse --error-format=json --no-progress > phpstan-baseline.json",
+        "cs-check": "PHP_CS_FIXER_IGNORE_ENV=1 php-cs-fixer fix --dry-run --diff --config=.php-cs-fixer.php --allow-risky=yes",
+        "cs-fix": "PHP_CS_FIXER_IGNORE_ENV=1 php-cs-fixer fix --config=.php-cs-fixer.php --allow-risky=yes",
+        "cs-fix:cache-clear": "PHP_CS_FIXER_IGNORE_ENV=1 php-cs-fixer fix --config=.php-cs-fixer.php --cache-file=.php-cs-fixer.cache --allow-risky=yes",
+        "test": "phpunit"
     }
 }
