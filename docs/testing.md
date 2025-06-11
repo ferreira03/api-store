@@ -144,3 +144,44 @@ $repository->find(1)->willReturn(new Store());
 - Clear test names
 - Arrange-Act-Assert pattern
 - Use data providers for multiple scenarios
+
+## CI/CD and QA Checks
+
+### GitHub Actions Workflow
+The project uses GitHub Actions for continuous integration and quality assurance. The QA workflow runs automatically on:
+- Push to `main` and `develop` branches
+- Pull requests to `main` and `develop` branches
+
+### QA Process Steps
+1. **Environment Setup**
+   - Uses Ubuntu latest
+   - PHP 8.1 with required extensions
+   - Composer for dependency management
+
+2. **Code Quality Checks**
+   - PHP CS Fixer for code style validation
+   - PHPStan for static analysis
+   - Runs on source and test directories
+
+3. **Dependency Management**
+   - Caches Composer dependencies
+   - Uses `--prefer-dist` for faster installation
+   - Ensures consistent dependency versions
+
+### Running QA Checks Locally
+```bash
+# Run PHP CS Fixer
+vendor/bin/php-cs-fixer fix --dry-run --diff
+
+# Run PHPStan
+vendor/bin/phpstan analyse src tests
+```
+
+### Required Extensions
+The QA environment requires the following PHP extensions:
+- mbstring
+- xml
+- ctype
+- iconv
+- intl
+- pdo_sqlite

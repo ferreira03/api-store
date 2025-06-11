@@ -20,11 +20,11 @@ Tasks:
 ## 🔐 Auth Module (Bearer Token)
 
 Tasks:
-[ ] Implement `AuthMiddleware.php` for token validation
-[ ] Create config file (`config/auth.php`) to store token
-[ ] Protect sensitive routes (POST, PUT, DELETE)
-[ ] Create unit tests for authentication
-[ ] Document authentication in Swagger + README
+[*] Implement `AuthMiddleware.php` for token validation
+[*] Create config file (`config/auth.php`) to store token
+[*] Protect sensitive routes (POST, PUT, DELETE)
+[*] Create unit tests for authentication
+[*] Document authentication in Swagger + README
 
 ---
 

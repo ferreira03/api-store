@@ -12,6 +12,7 @@ services:
       - ./config:/var/www/html/config
       - ./public:/var/www/html/public
       - ./var:/var/www/html/var
+      - ./vendor:/var/www/html/vendor
     networks:
       - api-store-network
 
@@ -23,8 +24,10 @@ services:
     ports:
       - "8000:80"
     volumes:
-      - ./public:/var/www/html
+      - ./public:/var/www/html/public
       - ./docker/nginx:/etc/nginx/conf.d
+    depends_on:
+      - php
     networks:
       - api-store-network
 

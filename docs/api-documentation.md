@@ -14,6 +14,111 @@ All protected endpoints require a Bearer token in the Authorization header:
 Authorization: Bearer your_token_here
 ```
 
+## Swagger Specification
+
+```yaml
+openapi: 3.0.0
+info:
+  title: API STORE
+  version: 1.0.0
+  description: RESTful API for store management
+
+servers:
+  - url: http://localhost:8000/api/v1
+    description: Development server
+
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+      description: JWT token for API authentication
+
+security:
+  - bearerAuth: []
+
+paths:
+  /stores:
+    post:
+      security:
+        - bearerAuth: []
+      summary: Create a new store
+      description: Creates a new store with the provided information
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - name
+                - address
+              properties:
+                name:
+                  type: string
+                  description: Name of the store
+                address:
+                  type: string
+                  description: Address of the store
+      responses:
+        '201':
+          description: Store created successfully
+        '401':
+          description: Unauthorized - Invalid or missing token
+        '422':
+          description: Validation error
+
+    put:
+      security:
+        - bearerAuth: []
+      summary: Update a store
+      description: Updates an existing store with the provided information
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                address:
+                  type: string
+      responses:
+        '200':
+          description: Store updated successfully
+        '401':
+          description: Unauthorized - Invalid or missing token
+        '404':
+          description: Store not found
+
+    delete:
+      security:
+        - bearerAuth: []
+      summary: Delete a store
+      description: Deletes an existing store
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '204':
+          description: Store deleted successfully
+        '401':
+          description: Unauthorized - Invalid or missing token
+        '404':
+          description: Store not found
+```
+
 ## Endpoints
 
 ### Stores

@@ -1,59 +1,94 @@
 # API STORE
 
-## Introduction
-API STORE is a RESTful API developed in pure PHP that provides an interface for store (magasins) management. The API allows listing, filtering, sorting, adding, editing, and deleting store records in a secure and efficient manner.
-
-## Objective
-The main objective of this API is to provide a robust and scalable solution for store management, following development best practices and REST standards.
+RESTful API for store management.
 
 ## Requirements
-- Docker
-- Docker Compose
-- PHP 8.1+
+
+- PHP 8.2 or higher
 - Composer
+- Docker and Docker Compose
 
-## How to run the project
+## Installation
 
-### Using Docker
-1. Clone the repository
-2. Run the command:
+1. Clone the repository:
+```bash
+git clone [REPOSITORY_URL]
+cd api-store
+```
+
+2. Install dependencies:
+```bash
+composer install
+```
+
+3. Configure environment:
+```bash
+cp .env.example .env
+```
+
+4. Start Docker containers:
 ```bash
 docker-compose up -d
 ```
-3. The API will be available at `http://localhost:8000`
 
-### Local Access
-After starting the Docker environment, you can access:
-- API: http://localhost:8000
-- Swagger Documentation: http://localhost:8000/api/docs
+## API Documentation
 
-### Authentication
-The API uses Bearer Token authentication. To access protected endpoints, include the header:
+The API documentation is available through Swagger UI at:
 ```
-Authorization: Bearer your_token_here
+http://localhost:8000/api/docs
 ```
 
-Example token for testing:
+The documentation includes:
+- List of all available routes
+- Input parameters details
+- Request and response examples
+- HTTP status codes
+
+## API Routes
+
+### Stores
+
+- `GET /api/v1/stores` - List all stores
+- `GET /api/v1/stores/{id}` - Get a specific store
+- `POST /api/v1/stores` - Create a new store
+- `PUT /api/v1/stores/{id}` - Update an existing store
+- `DELETE /api/v1/stores/{id}` - Remove a store
+
+## Development
+
+### Project Structure
+
 ```
-eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IlRlc3QgVXNlciJ9
+.
+├── config/             # Application configurations
+├── public/            # Application entry point
+│   └── api/
+│       └── docs/      # API Documentation (Swagger UI)
+├── src/               # Source code
+│   ├── Controllers/   # Controllers
+│   ├── Models/        # Models
+│   └── Services/      # Services
+├── tests/             # Automated tests
+├── var/               # Temporary files
+└── vendor/            # Composer dependencies
 ```
 
-### Running Tests
-To run automated tests:
+### Useful Commands
+
 ```bash
-docker-compose exec php vendor/bin/phpunit
-```
+# Start containers
+docker-compose up -d
 
-## Documentation
-- [Architecture](docs/architecture.md)
-- [Best Practices](docs/best-practices.md)
-- [Testing](docs/testing.md)
-- [API Documentation](docs/api-documentation.md)
-- [Technical Stack](docs/technical-stack.md)
-- [Folder Structure](docs/folder-structure.md)
-- [Docker](docs/docker.md)
-- [Authentication](docs/auth.md)
-- [Logs](docs/logging.md)
+# Stop containers
+docker-compose down
+
+# View logs
+docker-compose logs -f
+
+# Run tests
+composer test
+```
 
 ## License
-This project is under the MIT license. 
+
+This project is licensed under the MIT license. 

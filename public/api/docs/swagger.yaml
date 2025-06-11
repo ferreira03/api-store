@@ -1,0 +1,95 @@
+openapi: 3.0.0
+info:
+  title: API STORE
+  version: 1.0.0
+  description: RESTful API for store management
+servers:
+  - url: http://localhost:8000/api/v1
+    description: Development server
+paths:
+  /stores:
+    get:
+      summary: List all stores
+      description: Returns a list of stores
+      responses:
+        '200':
+          description: List of stores
+    post:
+      summary: Create a new store
+      description: Creates a new store
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                address:
+                  type: string
+      responses:
+        '201':
+          description: Store created successfully
+  /stores/{id}:
+    get:
+      summary: Get a specific store
+      description: Returns a store by ID
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Store found
+        '404':
+          description: Store not found
+    put:
+      security:
+        - bearerAuth: []
+      summary: Update a store
+      description: Updates an existing store with the provided information
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                address:
+                  type: string
+      responses:
+        '200':
+          description: Store updated successfully
+        '401':
+          description: Unauthorized - Invalid or missing token
+        '404':
+          description: Store not found
+    delete:
+      security:
+        - bearerAuth: []
+      summary: Delete a store
+      description: Deletes an existing store
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+      responses:
+        '204':
+          description: Store deleted successfully
+        '401':
+          description: Unauthorized - Invalid or missing token
+        '404':
+          description: Store not found

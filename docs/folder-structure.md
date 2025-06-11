@@ -90,14 +90,6 @@ tests/
         └── StoreControllerTest.php
 ```
 
-### End-to-End Tests
-```
-tests/
-└── E2E/
-    └── Features/
-        └── StoreManagementTest.php
-```
-
 ### Fixtures
 ```
 tests/
