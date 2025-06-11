@@ -2,26 +2,25 @@
 
 namespace App\Controllers\Store;
 
+use App\Http\Response;
+use Psr\Http\Message\ResponseInterface;
+
 class ListStoresController
 {
-    public function __invoke(array $params = []): array
+    /**
+     * @param array<string, mixed> $params
+     */
+    public function __invoke(array $params = []): ResponseInterface
     {
         // TODO: Implement store listing with filters
-        return [
-            'status' => 'success',
-            'data' => [
-                'items' => [],
-                'pagination' => [
-                    'total' => 0,
-                    'per_page' => 10,
-                    'current_page' => 1,
-                    'last_page' => 1,
-                ],
+        return Response::success([
+            'items' => [],
+            'pagination' => [
+                'total' => 0,
+                'per_page' => 10,
+                'current_page' => 1,
+                'last_page' => 1,
             ],
-            'meta' => [
-                'timestamp' => date('c'),
-                'request_id' => uniqid(),
-            ],
-        ];
+        ]);
     }
 }

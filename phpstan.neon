@@ -1,10 +1,15 @@
 parameters:
-    level: 5
+    level: 8
     paths:
         - src
     excludePaths:
         - vendor/*
-    checkMissingIterableValueType: true
+    checkMissingIterableValueType: false
     checkGenericClassInNonGenericObjectType: true
     checkMissingCallableSignature: true
     treatPhpDocTypesAsCertain: true
+    bootstrapFiles:
+        - vendor/psr/http-server-middleware/src/MiddlewareInterface.php
+        - vendor/psr/http-server-handler/src/RequestHandlerInterface.php
+        - vendor/psr/http-message/src/ServerRequestInterface.php
+        - vendor/psr/http-message/src/ResponseInterface.php

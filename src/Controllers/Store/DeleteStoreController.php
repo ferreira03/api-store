@@ -2,18 +2,17 @@
 
 namespace App\Controllers\Store;
 
+use App\Http\Response;
+use Psr\Http\Message\ResponseInterface;
+
 class DeleteStoreController
 {
-    public function __invoke(array $params): array
+    /**
+     * @param array<string, mixed> $params
+     */
+    public function __invoke(array $params = []): ResponseInterface
     {
         // TODO: Implement store deletion
-        return [
-            'status' => 'success',
-            'data' => null,
-            'meta' => [
-                'timestamp' => date('c'),
-                'request_id' => uniqid(),
-            ],
-        ];
+        return Response::success(null);
     }
 }
