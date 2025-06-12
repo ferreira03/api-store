@@ -8,7 +8,7 @@ use InvalidArgumentException;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 
-class UpdateStoreController
+class PatchStoreController
 {
     public function __construct(
         private readonly StoreService $storeService
@@ -29,17 +29,11 @@ class UpdateStoreController
                 return Response::error('INVALID_JSON', 'Invalid JSON payload', [], 400);
             }
 
-            $store = $this->storeService->updateStore(
-                $id,
-                $data['name'] ?? '',
-                $data['address'] ?? '',
-                $data['city'] ?? '',
-                $data['country'] ?? '',
-                $data['postal_code'] ?? '',
-                $data['phone'] ?? '',
-                $data['email'] ?? '',
-                $data['is_active'] ?? true
-            );
+            if (empty($data)) {
+                return Response::error('INVALID_REQUEST', 'Request body cannot be empty', [], 400);
+            }
+
+            $store = $this->storeService->patchStore($id, $data);
 
             return Response::success($store->toArray());
         } catch (InvalidArgumentException $e) {

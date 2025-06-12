@@ -21,5 +21,8 @@ return simpleDispatcher(function (RouteCollector $r) {
 
         // DELETE /api/v1/stores/{id} - Delete a store
         $r->delete('/stores/{id:\d+}', 'App\Controllers\Store\DeleteStoreController');
+
+        // PATCH /api/v1/stores/{id} - Update a store
+        $r->patch('/stores/{id:\d+}', 'App\Controllers\Store\PatchStoreController');
     });
 });

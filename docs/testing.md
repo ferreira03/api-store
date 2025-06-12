@@ -3,6 +3,9 @@
 ## Overview
 This document outlines the testing strategy and practices for the API STORE project. We use PHPUnit as our primary testing framework and follow a comprehensive testing approach.
 
+## Important Note
+All tests must be run inside Docker containers to ensure consistent environment and dependencies. This ensures that all developers and CI/CD pipelines are using the same environment for testing.
+
 ## Test Types
 
 ### Unit Tests
@@ -35,22 +38,7 @@ class StoreServiceTest extends TestCase
 - Use test database
 - Located in `tests/Integration/`
 
-Example:
-```php
-class StoreControllerTest extends TestCase
-{
-    public function testCreateStoreEndpoint()
-    {
-        $response = $this->post('/api/v1/stores', [
-            'name' => 'Test Store',
-            'address' => '123 Test St'
-        ]);
-        
-        $this->assertEquals(201, $response->getStatusCode());
-        $this->assertJson($response->getContent());
-    }
-}
-```
+
 
 ## Test Structure
 
@@ -64,86 +52,36 @@ tests/
 ├── Integration/
 │   ├── Controllers/
 │   └── Services/
-└── Fixtures/
 ```
-
-### Test Naming
-- `{ClassName}Test.php` for test classes
-- `test{MethodName}With{Scenario}` for test methods
 
 ## Test Data
 
-### Fixtures
-- Use factory classes
-- Create test data programmatically
-- Reset data between tests
-
-Example:
-```php
-class StoreFactory
-{
-    public static function create(array $attributes = []): Store
-    {
-        return new Store(array_merge([
-            'name' => 'Test Store',
-            'address' => '123 Test St'
-        ], $attributes));
-    }
-}
-```
-
-### Database
-- Use SQLite for testing
-- Reset database before each test
-- Use transactions for isolation
+n
 
 ## Running Tests
 
-### Via Docker
+### Via Docker (Required)
+All tests must be executed inside the Docker container to ensure environment consistency:
+
 ```bash
-docker-compose exec php vendor/bin/phpunit
-```
+# Run all tests
+docker-compose exec php php bin/phpunit
 
-### Specific Test Suite
-```bash
-vendor/bin/phpunit --testsuite Unit
-vendor/bin/phpunit --testsuite Integration
-```
+# Run specific test file
+docker-compose exec php php bin/phpunit tests/Unit/YourTest.php
 
-### With Coverage
-```bash
-vendor/bin/phpunit --coverage-html coverage/
-```
+# Run tests with coverage report
+docker-compose exec php php bin/phpunit --coverage-html coverage/
 
-## Code Coverage Requirements
-- Minimum 80% coverage for unit tests
-- Minimum 60% coverage for integration tests
-- Critical paths must have 100% coverage
+# Run specific test suite
+docker-compose exec php php bin/phpunit --testsuite Unit
+docker-compose exec php php bin/phpunit --testsuite Integration
 
-## Mocking
-
-### Using PHPUnit Mocks
-```php
-$repository = $this->createMock(StoreRepository::class);
-$repository->expects($this->once())
-    ->method('find')
-    ->with(1)
-    ->willReturn(new Store());
-```
-
-### Using Prophecy
-```php
-$repository = $this->prophesize(StoreRepository::class);
-$repository->find(1)->willReturn(new Store());
+# Run tests with specific filter
+docker-compose exec php php bin/phpunit --filter TestName
 ```
 
 ## Best Practices
-
-### Test Organization
-- One assertion per test
-- Clear test names
-- Arrange-Act-Assert pattern
-- Use data providers for multiple scenarios
 
 ## CI/CD and QA Checks
 
@@ -155,7 +93,7 @@ The project uses GitHub Actions for continuous integration and quality assurance
 ### QA Process Steps
 1. **Environment Setup**
    - Uses Ubuntu latest
-   - PHP 8.1 with required extensions
+   - PHP 8.2 with required extensions
    - Composer for dependency management
 
 2. **Code Quality Checks**
@@ -171,10 +109,10 @@ The project uses GitHub Actions for continuous integration and quality assurance
 ### Running QA Checks Locally
 ```bash
 # Run PHP CS Fixer
-vendor/bin/php-cs-fixer fix --dry-run --diff
+docker-compose exec php vendor/bin/php-cs-fixer fix --dry-run --diff
 
 # Run PHPStan
-vendor/bin/phpstan analyse src tests
+docker-compose exec php vendor/bin/phpstan analyse src tests
 ```
 
 ### Required Extensions
@@ -184,4 +122,6 @@ The QA environment requires the following PHP extensions:
 - ctype
 - iconv
 - intl
-- pdo_sqlite
+- pdo_mysql
+- json
+- curl

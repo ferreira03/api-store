@@ -28,11 +28,12 @@ COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 # Set working directory
 WORKDIR /var/www/html
 
-# Copy project files
-COPY . /var/www/html
-
-# Install dependencies
-RUN composer install
+# Create necessary directories
+RUN mkdir -p /var/www/html/public \
+    /var/www/html/src \
+    /var/www/html/config \
+    /var/www/html/var \
+    /var/www/html/vendor
 
 # Set permissions
 RUN chown -R www-data:www-data /var/www/html
@@ -49,8 +50,6 @@ CMD ["php-fpm"]
 ## Docker Compose
 
 ```yaml
-version: '3.8'
-
 services:
   # PHP Service
   php:
@@ -61,12 +60,12 @@ services:
     restart: unless-stopped
     working_dir: /var/www/html
     volumes:
-      - ./src:/var/www/html/src
-      - ./config:/var/www/html/config
-      - ./public:/var/www/html/public
-      - ./var:/var/www/html/var
+      - .:/var/www/html
+      - ./fixtures:/var/www/html/fixtures
     networks:
       - api-store-network
+    depends_on:
+      - mysql
 
   # Nginx Service
   nginx:
@@ -76,14 +75,36 @@ services:
     ports:
       - "8000:80"
     volumes:
-      - ./public:/var/www/html
+      - ./public:/var/www/html/public
       - ./docker/nginx:/etc/nginx/conf.d
+    depends_on:
+      - php
+    networks:
+      - api-store-network
+
+  # MySQL Service
+  mysql:
+    image: mysql:8.0
+    container_name: api-store-mysql
+    restart: unless-stopped
+    environment:
+      MYSQL_DATABASE: store_db
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_PASSWORD: root
+      MYSQL_USER: store_user
+    ports:
+      - "3306:3306"
+    volumes:
+      - mysql_data:/var/lib/mysql
     networks:
       - api-store-network
 
 networks:
   api-store-network:
     driver: bridge
+
+volumes:
+  mysql_data:
 ```
 
 ## Nginx Configuration
@@ -151,10 +172,9 @@ docker-compose down -v
 ### Persistent Volumes
 ```yaml
 volumes:
-  - ./src:/var/www/html/src
-  - ./config:/var/www/html/config
-  - ./public:/var/www/html/public
-  - ./var:/var/www/html/var
+  - .:/var/www/html
+  - ./fixtures:/var/www/html/fixtures
+  - mysql_data:/var/lib/mysql
 ```
 
 ### Volume Permissions
@@ -176,39 +196,22 @@ networks:
 ### Port Mapping
 ```yaml
 ports:
-  - "8000:80"  # Host:Container
+  - "8000:80"  # Nginx
+  - "3306:3306"  # MySQL
 ```
 
 ## Environment Variables
 
-### Docker Environment
+### MySQL Environment
 ```yaml
 environment:
-  - APP_ENV=development
-  - APP_DEBUG=true
-  - DB_CONNECTION=sqlite
-  - DB_DATABASE=/var/www/html/var/database/store.sqlite
-```
-
-### .env File
-```env
-APP_ENV=development
-APP_DEBUG=true
-DB_CONNECTION=sqlite
-DB_DATABASE=var/database/store.sqlite
+  MYSQL_DATABASE: store_db
+  MYSQL_ROOT_PASSWORD: root
+  MYSQL_PASSWORD: root
+  MYSQL_USER: store_user
 ```
 
 ## Development Tools
-
-### Xdebug Configuration
-```ini
-[xdebug]
-xdebug.mode=debug
-xdebug.start_with_request=yes
-xdebug.client_host=host.docker.internal
-xdebug.client_port=9003
-xdebug.idekey=PHPSTORM
-```
 
 ### Composer Configuration
 ```json
@@ -228,15 +231,19 @@ xdebug.idekey=PHPSTORM
 - Remove development tools
 - Set proper permissions
 - Use production PHP settings
+- Secure MySQL credentials
+- Configure proper firewall rules
 
 ### Performance
 - Enable OPcache
 - Configure PHP-FPM
 - Optimize Nginx
 - Use production Composer settings
+- Configure MySQL for production
 
 ### Monitoring
 - Configure logging
 - Set up health checks
 - Monitor container resources
-- Track application metrics 
+- Track application metrics
+- Monitor MySQL performance 

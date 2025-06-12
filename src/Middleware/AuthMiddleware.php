@@ -9,11 +9,8 @@ use Psr\Http\Server\RequestHandlerInterface;
 
 class AuthMiddleware
 {
-    private string $apiToken;
-
-    public function __construct(string $apiToken)
+    public function __construct(private string $apiToken)
     {
-        $this->apiToken = $apiToken;
     }
 
     public function process(ServerRequestInterface $request, RequestHandlerInterface $handler): ResponseInterface
