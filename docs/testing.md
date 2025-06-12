@@ -65,20 +65,13 @@ All tests must be executed inside the Docker container to ensure environment con
 
 ```bash
 # Run all tests
-docker-compose exec php php bin/phpunit
+docker-compose exec php vendor/bin/phpunit 
 
 # Run specific test file
-docker-compose exec php php bin/phpunit tests/Unit/YourTest.php
-
-# Run tests with coverage report
-docker-compose exec php php bin/phpunit --coverage-html coverage/
-
-# Run specific test suite
-docker-compose exec php php bin/phpunit --testsuite Unit
-docker-compose exec php php bin/phpunit --testsuite Integration
+docker-compose exec php vendor/bin/phpunit tests/Unit/YourTest.php
 
 # Run tests with specific filter
-docker-compose exec php php bin/phpunit --filter TestName
+docker-compose exec php vendor/bin/phpunit --filter TestName
 ```
 
 ## Best Practices
