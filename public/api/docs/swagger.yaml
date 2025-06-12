@@ -1,62 +1,404 @@
 openapi: 3.0.0
 info:
-  title: API STORE
+  title: Store API
   version: 1.0.0
-  description: RESTful API for store management
+  description: RESTful API for store management with authentication and validation
+
 servers:
   - url: http://localhost:8000/api/v1
     description: Development server
+
+components:
+  securitySchemes:
+    BearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+
+  schemas:
+    Store:
+      type: object
+      required:
+        - name
+        - address
+        - city
+        - country
+        - postal_code
+        - phone
+        - email
+      properties:
+        id:
+          type: integer
+          format: int64
+          readOnly: true
+        name:
+          type: string
+          maxLength: 100
+        address:
+          type: string
+          maxLength: 200
+        city:
+          type: string
+          maxLength: 100
+        country:
+          type: string
+          maxLength: 100
+        postal_code:
+          type: string
+          maxLength: 20
+        phone:
+          type: string
+          maxLength: 20
+        email:
+          type: string
+          format: email
+        is_active:
+          type: boolean
+          default: true
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+        updated_at:
+          type: string
+          format: date-time
+          readOnly: true
+
+    Error:
+      type: object
+      properties:
+        status:
+          type: string
+          enum: [error]
+        error:
+          type: object
+          properties:
+            code:
+              type: string
+            message:
+              type: string
+            details:
+              type: array
+              items:
+                type: object
+        meta:
+          type: object
+          properties:
+            timestamp:
+              type: string
+              format: date-time
+            request_id:
+              type: string
+
 paths:
   /stores:
     get:
       summary: List all stores
-      description: Returns a list of stores
+      description: Returns a list of stores with filtering and sorting options
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: city
+          in: query
+          schema:
+            type: string
+          description: Filter by city
+        - name: country
+          in: query
+          schema:
+            type: string
+          description: Filter by country
+        - name: is_active
+          in: query
+          schema:
+            type: boolean
+          description: Filter by active status
+        - name: sort
+          in: query
+          schema:
+            type: string
+          description: Field to sort by
+        - name: direction
+          in: query
+          schema:
+            type: string
+            enum: [asc, desc]
+          description: Sort direction
       responses:
         '200':
           description: List of stores
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    enum: [success]
+                  data:
+                    type: object
+                    properties:
+                      items:
+                        type: array
+                        items:
+                          $ref: '#/components/schemas/Store'
+                      pagination:
+                        type: object
+                        properties:
+                          total:
+                            type: integer
+                          per_page:
+                            type: integer
+                          current_page:
+                            type: integer
+                          last_page:
+                            type: integer
+                  meta:
+                    type: object
+                    properties:
+                      timestamp:
+                        type: string
+                        format: date-time
+                      request_id:
+                        type: string
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
     post:
       summary: Create a new store
-      description: Creates a new store
+      description: Creates a new store with the provided data
+      security:
+        - BearerAuth: []
       requestBody:
         required: true
         content:
           application/json:
             schema:
-              type: object
-              properties:
-                name:
-                  type: string
-                address:
-                  type: string
+              $ref: '#/components/schemas/Store'
+            example:
+              name: "Store Name"
+              address: "123 Main Street"
+              city: "New York"
+              country: "USA"
+              postal_code: "10001"
+              phone: "+1234567890"
+              email: "store@example.com"
+              is_active: true
       responses:
         '201':
           description: Store created successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    enum: [success]
+                  data:
+                    $ref: '#/components/schemas/Store'
+                  meta:
+                    type: object
+                    properties:
+                      timestamp:
+                        type: string
+                        format: date-time
+                      request_id:
+                        type: string
+        '400':
+          description: Invalid input data
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
   /stores/{id}:
+    parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: integer
+          format: int64
+        description: Store ID
+
     get:
       summary: Get a specific store
-      description: Returns a store by ID
-      parameters:
-        - in: path
-          name: id
-          required: true
-          schema:
-            type: integer
+      description: Returns details of a specific store
+      security:
+        - BearerAuth: []
       responses:
         '200':
-          description: Store found
+          description: Store details
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    enum: [success]
+                  data:
+                    $ref: '#/components/schemas/Store'
+                  meta:
+                    type: object
+                    properties:
+                      timestamp:
+                        type: string
+                        format: date-time
+                      request_id:
+                        type: string
+        '400':
+          description: Invalid ID format
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
         '404':
           description: Store not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
     put:
-      security:
-        - bearerAuth: []
       summary: Update a store
-      description: Updates an existing store with the provided information
-      parameters:
-        - in: path
-          name: id
-          required: true
-          schema:
-            type: integer
+      description: Updates an existing store with the provided data
+      security:
+        - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Store'
+            example:
+              name: "Updated Store Name"
+              address: "456 New Street"
+              city: "Los Angeles"
+              country: "USA"
+              postal_code: "90001"
+              phone: "+1-555-0124"
+              email: "updated@example.com"
+              is_active: true
+      responses:
+        '200':
+          description: Store updated successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    enum: [success]
+                  data:
+                    $ref: '#/components/schemas/Store'
+                  meta:
+                    type: object
+                    properties:
+                      timestamp:
+                        type: string
+                        format: date-time
+                      request_id:
+                        type: string
+        '400':
+          description: Invalid input data
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: Store not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+    delete:
+      summary: Delete a store
+      description: Removes an existing store
+      security:
+        - BearerAuth: []
+      responses:
+        '204':
+          description: Store deleted successfully
+        '400':
+          description: Invalid ID format
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: Store not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+    patch:
+      summary: Update a store partially
+      description: Updates specific fields of an existing store
+      security:
+        - BearerAuth: []
       requestBody:
         required: true
         content:
@@ -66,30 +408,72 @@ paths:
               properties:
                 name:
                   type: string
+                  maxLength: 100
                 address:
                   type: string
+                  maxLength: 200
+                city:
+                  type: string
+                  maxLength: 100
+                country:
+                  type: string
+                  maxLength: 100
+                postal_code:
+                  type: string
+                  maxLength: 20
+                phone:
+                  type: string
+                  maxLength: 20
+                email:
+                  type: string
+                  format: email
+                is_active:
+                  type: boolean
+            example:
+              name: "Updated Store Name"
+              is_active: false
       responses:
         '200':
           description: Store updated successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    enum: [success]
+                  data:
+                    $ref: '#/components/schemas/Store'
+                  meta:
+                    type: object
+                    properties:
+                      timestamp:
+                        type: string
+                        format: date-time
+                      request_id:
+                        type: string
+        '400':
+          description: Invalid input data
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
         '401':
-          description: Unauthorized - Invalid or missing token
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
         '404':
           description: Store not found
-    delete:
-      security:
-        - bearerAuth: []
-      summary: Delete a store
-      description: Deletes an existing store
-      parameters:
-        - in: path
-          name: id
-          required: true
-          schema:
-            type: integer
-      responses:
-        '204':
-          description: Store deleted successfully
-        '401':
-          description: Unauthorized - Invalid or missing token
-        '404':
-          description: Store not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'

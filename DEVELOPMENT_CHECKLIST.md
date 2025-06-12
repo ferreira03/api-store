@@ -31,26 +31,27 @@ Tasks:
 ## 🧱 Core Domain – Store (Magasin)
 
 Tasks:
-[ ] Create Store Entity
-[ ] Create Store Repository (interface and implementation)
-[ ] Create Store Service (business logic)
-[ ] Create Store Controller (expose REST routes)
-[ ] Create input validations
-[ ] Implement persistence with JSON or SQLite
-[ ] Create unit tests for each layer (Entity, Repo, Service, Controller)
+[*] Create Store Entity
+[*] Create Store Repository (interface and implementation)
+[*] Create Store Service (business logic)
+[*] Create Store Controller (expose REST routes)
+[*] Create input validations
+[*] Implement persistence with MySQL
+[ ] Create unit tests for each layer (Entity ✅, Repo ✅, Service ✅, Controller❌)
 
 ---
 
 ## 🚦 API Routes & Business Logic
 
 Tasks:
-[ ] Implement `GET /stores` route (list)
-[ ] Implement `GET /stores?filter=...&sort=...` route
-[ ] Implement `POST /stores` route (create)
-[ ] Implement `PUT /stores/{id}` route (edit)
-[ ] Implement `DELETE /stores/{id}` route (delete)
-[ ] Tests for each route (PHPUnit + integration)
-[ ] Document all routes in Swagger
+[*] Implement `GET /stores` route (list)
+[*] Implement `GET /stores?filter=...&sort=...` route
+[*] Implement `POST /stores` route (create)
+[*] Implement `PUT /stores/{id}` route (edit)
+[*] Implement `DELETE /stores/{id}` route (delete)
+[*] Implement `PATCH /stores/{id}` route (partial update)
+[ ] Tests for each route (PHPUnit ✅+ integration❌)
+[*] Document all routes in Swagger
 
 ---
 
@@ -69,10 +70,10 @@ Tasks:
 ## 🧪 Testing Module
 
 Tasks:
-[ ] Setup PHPUnit (phpunit.xml, bootstrap)
-[ ] Create base unit tests
+[*] Setup PHPUnit (phpunit.xml, bootstrap)
+[*] Create base unit tests
 [ ] Create integration tests for REST routes
-[ ] Mock dependencies (repository, logger)
+[*] Mock dependencies (repository, logger)
 [ ] Run tests via Docker
 [ ] Ensure minimum coverage of 80%
 
@@ -97,8 +98,8 @@ Tasks:
 [ ] Check test coverage
 [ ] Check logs and errors in container
 [ ] Validate response from all endpoints
-[ ] Validate Swagger documentation via browser
-[ ] Validate API running with complete Docker setup
+[*] Validate Swagger documentation via browser
+[*] Validate API running with complete Docker setup
 
 ---
 

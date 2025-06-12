@@ -6,7 +6,25 @@ use App\Middleware\AuthMiddleware;
 use GuzzleHttp\Psr7\ServerRequest;
 use PHPUnit\Framework\TestCase;
 use Psr\Http\Message\ResponseInterface;
+use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\RequestHandlerInterface;
+
+class TestRequestHandler implements RequestHandlerInterface
+{
+    private int $statusCode;
+    private string $message;
+
+    public function __construct(int $statusCode = 200, string $message = '')
+    {
+        $this->statusCode = $statusCode;
+        $this->message = $message;
+    }
+
+    public function handle(ServerRequestInterface $request): ResponseInterface
+    {
+        return new \GuzzleHttp\Psr7\Response($this->statusCode, [], $this->message);
+    }
+}
 
 class AuthMiddlewareTest extends TestCase
 {
@@ -27,12 +45,7 @@ class AuthMiddlewareTest extends TestCase
             ['Authorization' => 'Bearer ' . $this->validToken]
         );
 
-        $handler = new class () implements RequestHandlerInterface {
-            public function handle(\Psr\Http\Message\ServerRequestInterface $request): \Psr\Http\Message\ResponseInterface
-            {
-                return new \GuzzleHttp\Psr7\Response();
-            }
-        };
+        $handler = new TestRequestHandler();
 
         // Act
         $response = $this->middleware->process($request, $handler);
@@ -45,12 +58,7 @@ class AuthMiddlewareTest extends TestCase
     {
         // Arrange
         $request = new ServerRequest('POST', '/api/v1/stores');
-        $handler = new class () implements RequestHandlerInterface {
-            public function handle(\Psr\Http\Message\ServerRequestInterface $request): \Psr\Http\Message\ResponseInterface
-            {
-                return new \GuzzleHttp\Psr7\Response(401, [], 'Authentication required');
-            }
-        };
+        $handler = new TestRequestHandler(401, 'Authentication required');
 
         // Act
         $response = $this->middleware->process($request, $handler);
@@ -68,12 +76,7 @@ class AuthMiddlewareTest extends TestCase
             '/api/v1/stores',
             ['Authorization' => 'Bearer invalid-token']
         );
-        $handler = new class () implements RequestHandlerInterface {
-            public function handle(\Psr\Http\Message\ServerRequestInterface $request): \Psr\Http\Message\ResponseInterface
-            {
-                return new \GuzzleHttp\Psr7\Response(401, [], 'Invalid token');
-            }
-        };
+        $handler = new TestRequestHandler(401, 'Invalid token');
 
         // Act
         $response = $this->middleware->process($request, $handler);
@@ -91,12 +94,7 @@ class AuthMiddlewareTest extends TestCase
             '/api/v1/stores',
             ['Authorization' => 'InvalidFormat ' . $this->validToken]
         );
-        $handler = new class () implements RequestHandlerInterface {
-            public function handle(\Psr\Http\Message\ServerRequestInterface $request): \Psr\Http\Message\ResponseInterface
-            {
-                return new \GuzzleHttp\Psr7\Response(401, [], 'Invalid authorization header format');
-            }
-        };
+        $handler = new TestRequestHandler(401, 'Invalid authorization header format');
 
         // Act
         $response = $this->middleware->process($request, $handler);
@@ -114,12 +112,7 @@ class AuthMiddlewareTest extends TestCase
             '/api/v1/stores',
             ['Authorization' => 'Bearer ']
         );
-        $handler = new class () implements RequestHandlerInterface {
-            public function handle(\Psr\Http\Message\ServerRequestInterface $request): \Psr\Http\Message\ResponseInterface
-            {
-                return new \GuzzleHttp\Psr7\Response(401, [], 'Invalid authorization header format');
-            }
-        };
+        $handler = new TestRequestHandler(401, 'Invalid authorization header format');
 
         // Act
         $response = $this->middleware->process($request, $handler);

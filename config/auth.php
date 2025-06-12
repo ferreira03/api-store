@@ -1,5 +1,5 @@
 <?php
 
 return [
-    'api_token' => getenv('API_TOKEN') ?: 'your-secure-token-here',
+    'api_token' => $_ENV['API_TOKEN'] ?? 'secure-token-here',
 ];

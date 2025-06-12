@@ -13,15 +13,20 @@ api-store/
 ├── var/                    # Variable files
 ├── docs/                   # Documentation
 ├── vendor/                 # Composer dependencies
-├── .env                    # Environment variables
-├── .env.example           # Example environment variables
-├── .gitignore             # Git ignore rules
-├── composer.json          # Composer configuration
-├── composer.lock          # Composer lock file
+├── bin/                    # Binary files and scripts
+├── docker/                 # Docker related files
+├── .github/               # GitHub related files
 ├── docker-compose.yml     # Docker compose configuration
 ├── Dockerfile             # Docker configuration
 ├── phpunit.xml           # PHPUnit configuration
-└── README.md             # Project documentation
+├── phpstan.neon          # PHPStan configuration
+├── .php-cs-fixer.php     # PHP CS Fixer configuration
+├── .php-cs-fixer.cache   # PHP CS Fixer cache
+├── .phpunit.result.cache # PHPUnit result cache
+├── composer.json         # Composer configuration
+├── composer.lock         # Composer lock file
+├── .gitignore           # Git ignore rules
+└── README.md            # Project documentation
 ```
 
 ## Source Code (`src/`)
@@ -30,16 +35,22 @@ api-store/
 ```
 src/
 └── Controllers/
-    ├── StoreController.php
-    └── AuthController.php
+    └── StoreController.php
+```
+
+### Http
+```
+src/
+└── Http/
+    └── Request/
+        └── StoreRequest.php
 ```
 
 ### Services
 ```
 src/
 └── Services/
-    ├── StoreService.php
-    └── AuthService.php
+    └── StoreService.php
 ```
 
 ### Repositories
@@ -56,18 +67,43 @@ src/
 src/
 └── Domain/
     ├── Store.php
-    ├── exceptions/
-    │   └── StoreException.php
-    └── value-objects/
-        └── Address.php
+    └── exceptions/
+        └── StoreException.php
+```
+
+### Database
+```
+src/
+└── Database/
+    └── Database.php
+```
+
+### Config
+```
+src/
+└── Config/
+    └── Config.php
+```
+
+### Commands
+```
+src/
+└── Commands/
+    └── CreateStoreCommand.php
 ```
 
 ### Middleware
 ```
 src/
 └── Middleware/
-    ├── AuthMiddleware.php
-    └── CorsMiddleware.php
+    └── AuthMiddleware.php
+```
+
+### Exceptions
+```
+src/
+└── Exceptions/
+    └── StoreException.php
 ```
 
 ## Tests (`tests/`)
@@ -90,21 +126,12 @@ tests/
         └── StoreControllerTest.php
 ```
 
-### Fixtures
-```
-tests/
-└── Fixtures/
-    └── StoreFixture.php
-```
-
 ## Public Directory (`public/`)
 
 ```
 public/
 ├── index.php             # Entry point
-├── .htaccess            # Apache configuration
-└── assets/              # Static assets
-    └── swagger/         # Swagger documentation
+└── .htaccess            # Apache configuration
 ```
 
 ## Configuration (`config/`)
@@ -122,10 +149,8 @@ config/
 ```
 var/
 ├── cache/              # Cache files
-├── logs/               # Log files
-│   └── app.log        # Application log
-└── database/          # Database files
-    └── store.sqlite   # SQLite database
+└── logs/               # Log files
+    └── app.log        # Application log
 ```
 
 ## Documentation (`docs/`)
@@ -139,93 +164,3 @@ docs/
 ├── technical-stack.md  # Technical stack
 └── folder-structure.md # This file
 ```
-
-## Composer Configuration
-
-### PSR-4 Autoloading
-```json
-{
-    "autoload": {
-        "psr-4": {
-            "App\\": "src/"
-        }
-    },
-    "autoload-dev": {
-        "psr-4": {
-            "Tests\\": "tests/"
-        }
-    }
-}
-```
-
-## Docker Configuration
-
-### Docker Compose Services
-```yaml
-services:
-  php:
-    build: .
-    volumes:
-      - ./src:/var/www/html/src
-      - ./config:/var/www/html/config
-      - ./public:/var/www/html/public
-      - ./var:/var/www/html/var
-  nginx:
-    image: nginx:alpine
-    volumes:
-      - ./public:/var/www/html
-      - ./docker/nginx:/etc/nginx/conf.d
-```
-
-## Environment Variables
-
-### Required Variables
-```
-DB_CONNECTION=sqlite
-DB_DATABASE=var/database/store.sqlite
-APP_ENV=development
-APP_DEBUG=true
-APP_SECRET=your-secret-key
-```
-
-## Git Configuration
-
-### .gitignore
-```
-/vendor/
-/var/cache/*
-/var/logs/*
-/var/database/*
-.env
-.phpunit.result.cache
-```
-
-## Development Workflow
-
-### Directory Permissions
-```bash
-# Set proper permissions
-chmod -R 755 public/
-chmod -R 777 var/
-```
-
-### Cache Directory
-```bash
-# Create cache directory
-mkdir -p var/cache
-chmod -R 777 var/cache
-```
-
-### Log Directory
-```bash
-# Create log directory
-mkdir -p var/logs
-chmod -R 777 var/logs
-```
-
-### Database Directory
-```bash
-# Create database directory
-mkdir -p var/database
-chmod -R 777 var/database
-``` 

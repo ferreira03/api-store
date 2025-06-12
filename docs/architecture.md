@@ -30,13 +30,45 @@ The API STORE follows a layered architecture, implementing the Repository patter
 - Implements domain rules
 - Maintains pure business logic
 
+### 5. Database (src/Database)
+- Database configuration and connection management
+- Migration handling
+- Database schema definitions
+
+### 6. Http (src/Http)
+- Request/Response handling
+- HTTP-related utilities
+- PSR-7 implementation
+
+### 7. Middleware (src/Middleware)
+- Request/Response processing
+- Authentication/Authorization
+- CORS handling
+- Request validation
+
+### 8. Config (src/Config)
+- Application configuration
+- Environment variables management
+- Service configuration
+
+### 9. Exceptions (src/Exceptions)
+- Custom exception classes
+- Error handling strategies
+- Exception formatting
+
+### 10. Commands (src/Commands)
+- CLI command handlers
+- Console utilities
+- Command-line interface implementation
+
 ## Request Flow
 1. HTTP request arrives at entrypoint (public/index.php)
 2. Router (FastRoute) directs to appropriate controller
-3. Controller validates data and calls service
-4. Service executes business logic and uses repositories
-5. Repository persists/retrieves data
-6. Response is formatted and returned
+3. Middleware processes the request
+4. Controller validates data and calls service
+5. Service executes business logic and uses repositories
+6. Repository persists/retrieves data
+7. Response is formatted and returned
 
 ## Patterns and Conventions
 
@@ -58,30 +90,29 @@ The API STORE follows a layered architecture, implementing the Repository patter
 - Constants in UPPER_CASE
 - 4 spaces for indentation
 
-## Technical Justifications
+## Technical Stack
 
-### Use of Standalone Components
-- **FastRoute**: Light and fast routing
-- **PHP-DI**: Flexible dependency injection
-- **Symfony Components**: Mature and tested components
+### Core Dependencies
+- PHP 8.1+
+- FastRoute for routing
+- PHP-DI for dependency injection
+- GuzzleHttp/PSR7 for HTTP message handling
+- Monolog for logging
+- PHPUnit for testing
+- PHPStan for static analysis
+- PHP-CS-Fixer for code style
 
-### No Full-Stack Framework
-- Better code control
-- Lower overhead
-- Better flow understanding
-- More suitable for simple APIs
-
-### Layered Structure
-- Clear separation of responsibilities
-- Facilitates unit testing
-- Allows implementation swapping
-- Keeps code organized
+### Development Tools
+- PHPUnit for unit testing
+- PHPStan for static analysis
+- PHP-CS-Fixer for code style enforcement
+- Symfony VarDumper for debugging
 
 ## Architecture Diagram
 ```
-[HTTP Request] → [Router] → [Controller] → [Service] → [Repository] → [Data Source]
-      ↑                                                                  ↓
-      └────────────────── [Response] ← [Service] ← [Repository] ←────────┘
+[HTTP Request] → [Middleware] → [Router] → [Controller] → [Service] → [Repository] → [Database]
+      ↑                                                                                    ↓
+      └────────────────── [Response] ← [Service] ← [Repository] ←──────────────────────────┘
 ```
 
 ## Security Architecture
@@ -111,5 +142,18 @@ The API STORE follows a layered architecture, implementing the Repository patter
 - Authorization errors (403)
 - Resource errors (404)
 - Server errors (500)
+
+## Development Workflow
+
+### Code Quality
+- PHPStan for static analysis
+- PHP-CS-Fixer for code style
+- Unit tests with PHPUnit
+- Continuous Integration ready
+
+### Environment Management
+- .env file for configuration
+- Environment-specific settings
+- Secure credential management
 
 

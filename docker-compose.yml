@@ -8,13 +8,12 @@ services:
     restart: unless-stopped
     working_dir: /var/www/html
     volumes:
-      - ./src:/var/www/html/src
-      - ./config:/var/www/html/config
-      - ./public:/var/www/html/public
-      - ./var:/var/www/html/var
-      - ./vendor:/var/www/html/vendor
+      - .:/var/www/html
+      - ./fixtures:/var/www/html/fixtures
     networks:
       - api-store-network
+    depends_on:
+      - mysql
 
   # Nginx Service
   nginx:
@@ -31,6 +30,26 @@ services:
     networks:
       - api-store-network
 
+  # MySQL Service
+  mysql:
+    image: mysql:8.0
+    container_name: api-store-mysql
+    restart: unless-stopped
+    environment:
+      MYSQL_DATABASE: store_db
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_PASSWORD: root
+      MYSQL_USER: store_user
+    ports:
+      - "3306:3306"
+    volumes:
+      - mysql_data:/var/lib/mysql
+    networks:
+      - api-store-network
+
 networks:
   api-store-network:
-    driver: bridge 
+    driver: bridge
+
+volumes:
+  mysql_data: 

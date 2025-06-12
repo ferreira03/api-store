@@ -40,8 +40,6 @@ docker-compose.override.yml
 
 # Database
 /var/database/*
-*.sqlite
-*.sqlite3
 *.db
 
 # Application specific

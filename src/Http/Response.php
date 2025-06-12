@@ -7,10 +7,21 @@ use Psr\Http\Message\ResponseInterface;
 
 class Response
 {
+    private static function getHeaders(int $contentLength): array
+    {
+        return [
+            'Content-Type' => ['application/json'],
+            'Content-Length' => [(string) $contentLength],
+            'Access-Control-Allow-Origin' => ['*'],
+            'Access-Control-Allow-Methods' => ['GET, POST, PUT, PATCH, DELETE, OPTIONS'],
+            'Access-Control-Allow-Headers' => ['DNT,User-Agent,X-Requested-With,If-Modified-Since,Cache-Control,Content-Type,Range,Authorization'],
+            'Access-Control-Expose-Headers' => ['Content-Length,Content-Range'],
+            'Access-Control-Max-Age' => ['1728000'],
+        ];
+    }
+
     public static function success(mixed $data = null, int $status = 200): ResponseInterface
     {
-        $response = new Psr7Response();
-
         $content = [
             'status' => 'success',
             'data' => $data,
@@ -20,22 +31,24 @@ class Response
             ],
         ];
 
-        $json = json_encode($content);
+        $json = json_encode($content, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
         if ($json === false) {
             throw new \RuntimeException('Failed to encode JSON response: ' . json_last_error_msg());
         }
 
-        $response->getBody()->write($json);
+        $response = new Psr7Response(
+            $status,
+            self::getHeaders(strlen($json)),
+            $json
+        );
 
-        return $response
-            ->withStatus($status)
-            ->withHeader('Content-Type', 'application/json');
+        error_log('Success response: ' . $json);
+
+        return $response;
     }
 
     public static function error(string $code, string $message, array $details = [], int $status = 400): ResponseInterface
     {
-        $response = new Psr7Response();
-
         $content = [
             'status' => 'error',
             'error' => [
@@ -52,15 +65,19 @@ class Response
             $content['error']['details'] = $details;
         }
 
-        $json = json_encode($content);
+        $json = json_encode($content, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
         if ($json === false) {
             throw new \RuntimeException('Failed to encode JSON response: ' . json_last_error_msg());
         }
 
-        $response->getBody()->write($json);
+        error_log('Error response: ' . $json);
 
-        return $response
-            ->withStatus($status)
-            ->withHeader('Content-Type', 'application/json');
+        $response = new Psr7Response(
+            $status,
+            self::getHeaders(strlen($json)),
+            $json
+        );
+
+        return $response;
     }
 }

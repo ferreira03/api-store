@@ -15,108 +15,9 @@ Authorization: Bearer your_token_here
 ```
 
 ## Swagger Specification
-
-```yaml
-openapi: 3.0.0
-info:
-  title: API STORE
-  version: 1.0.0
-  description: RESTful API for store management
-
-servers:
-  - url: http://localhost:8000/api/v1
-    description: Development server
-
-components:
-  securitySchemes:
-    bearerAuth:
-      type: http
-      scheme: bearer
-      bearerFormat: JWT
-      description: JWT token for API authentication
-
-security:
-  - bearerAuth: []
-
-paths:
-  /stores:
-    post:
-      security:
-        - bearerAuth: []
-      summary: Create a new store
-      description: Creates a new store with the provided information
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              type: object
-              required:
-                - name
-                - address
-              properties:
-                name:
-                  type: string
-                  description: Name of the store
-                address:
-                  type: string
-                  description: Address of the store
-      responses:
-        '201':
-          description: Store created successfully
-        '401':
-          description: Unauthorized - Invalid or missing token
-        '422':
-          description: Validation error
-
-    put:
-      security:
-        - bearerAuth: []
-      summary: Update a store
-      description: Updates an existing store with the provided information
-      parameters:
-        - name: id
-          in: path
-          required: true
-          schema:
-            type: integer
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              type: object
-              properties:
-                name:
-                  type: string
-                address:
-                  type: string
-      responses:
-        '200':
-          description: Store updated successfully
-        '401':
-          description: Unauthorized - Invalid or missing token
-        '404':
-          description: Store not found
-
-    delete:
-      security:
-        - bearerAuth: []
-      summary: Delete a store
-      description: Deletes an existing store
-      parameters:
-        - name: id
-          in: path
-          required: true
-          schema:
-            type: integer
-      responses:
-        '204':
-          description: Store deleted successfully
-        '401':
-          description: Unauthorized - Invalid or missing token
-        '404':
-          description: Store not found
+The complete OpenAPI specification is available at:
+```
+http://localhost:8000/api/docs
 ```
 
 ## Endpoints
@@ -129,11 +30,11 @@ GET /stores
 ```
 
 Query Parameters:
-- `page` (integer, optional): Page number (default: 1)
-- `limit` (integer, optional): Items per page (default: 10)
-- `sort` (string, optional): Field to sort by (default: id)
-- `order` (string, optional): Sort order (asc/desc, default: asc)
-- `search` (string, optional): Search term
+- `city` (string, optional): Filter by city
+- `country` (string, optional): Filter by country
+- `is_active` (boolean, optional): Filter by active status
+- `sort` (string, optional): Field to sort by
+- `direction` (string, optional): Sort direction (asc/desc)
 
 Response:
 ```json
@@ -145,6 +46,12 @@ Response:
                 "id": 1,
                 "name": "Store Name",
                 "address": "Store Address",
+                "city": "New York",
+                "country": "USA",
+                "postal_code": "10001",
+                "phone": "+1234567890",
+                "email": "store@example.com",
+                "is_active": true,
                 "created_at": "2024-03-20T12:00:00Z",
                 "updated_at": "2024-03-20T12:00:00Z"
             }
@@ -176,6 +83,12 @@ Response:
         "id": 1,
         "name": "Store Name",
         "address": "Store Address",
+        "city": "New York",
+        "country": "USA",
+        "postal_code": "10001",
+        "phone": "+1234567890",
+        "email": "store@example.com",
+        "is_active": true,
         "created_at": "2024-03-20T12:00:00Z",
         "updated_at": "2024-03-20T12:00:00Z"
     },
@@ -195,7 +108,13 @@ Request Body:
 ```json
 {
     "name": "New Store",
-    "address": "123 Main St"
+    "address": "123 Main St",
+    "city": "New York",
+    "country": "USA",
+    "postal_code": "10001",
+    "phone": "+1234567890",
+    "email": "store@example.com",
+    "is_active": true
 }
 ```
 
@@ -207,6 +126,12 @@ Response:
         "id": 1,
         "name": "New Store",
         "address": "123 Main St",
+        "city": "New York",
+        "country": "USA",
+        "postal_code": "10001",
+        "phone": "+1234567890",
+        "email": "store@example.com",
+        "is_active": true,
         "created_at": "2024-03-20T12:00:00Z",
         "updated_at": "2024-03-20T12:00:00Z"
     },
@@ -226,7 +151,13 @@ Request Body:
 ```json
 {
     "name": "Updated Store",
-    "address": "456 New St"
+    "address": "456 New St",
+    "city": "Los Angeles",
+    "country": "USA",
+    "postal_code": "90001",
+    "phone": "+1-555-0124",
+    "email": "updated@example.com",
+    "is_active": true
 }
 ```
 
@@ -238,6 +169,49 @@ Response:
         "id": 1,
         "name": "Updated Store",
         "address": "456 New St",
+        "city": "Los Angeles",
+        "country": "USA",
+        "postal_code": "90001",
+        "phone": "+1-555-0124",
+        "email": "updated@example.com",
+        "is_active": true,
+        "created_at": "2024-03-20T12:00:00Z",
+        "updated_at": "2024-03-20T12:00:00Z"
+    },
+    "meta": {
+        "timestamp": "2024-03-20T12:00:00Z",
+        "request_id": "abc123"
+    }
+}
+```
+
+#### Patch Store
+```http
+PATCH /stores/{id}
+```
+
+Request Body:
+```json
+{
+    "name": "Updated Store Name",
+    "is_active": false
+}
+```
+
+Response:
+```json
+{
+    "status": "success",
+    "data": {
+        "id": 1,
+        "name": "Updated Store Name",
+        "address": "456 New St",
+        "city": "Los Angeles",
+        "country": "USA",
+        "postal_code": "90001",
+        "phone": "+1-555-0124",
+        "email": "updated@example.com",
+        "is_active": false,
         "created_at": "2024-03-20T12:00:00Z",
         "updated_at": "2024-03-20T12:00:00Z"
     },
@@ -317,13 +291,6 @@ Response:
     }
 }
 ```
-
-## OpenAPI/Swagger Specification
-The complete OpenAPI specification is available at:
-```
-http://localhost:8000/api/docs
-```
-
 
 ## Versioning
 - Current version: v1
