@@ -3,8 +3,10 @@
 namespace Tests\Unit\Services;
 
 use App\Domain\Store;
+use App\Exceptions\StoreValidationException;
 use App\Repositories\interfaces\StoreRepositoryInterface;
 use App\Services\StoreService;
+use App\Services\StoreValidator;
 use InvalidArgumentException;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
@@ -13,11 +15,13 @@ class StoreServiceTest extends TestCase
 {
     private StoreService $service;
     private StoreRepositoryInterface&MockObject $repository;
+    private StoreValidator&MockObject $validator;
 
     protected function setUp(): void
     {
         $this->repository = $this->createMock(StoreRepositoryInterface::class);
-        $this->service = new StoreService($this->repository);
+        $this->validator = $this->createMock(StoreValidator::class);
+        $this->service = new StoreService($this->repository, $this->validator);
     }
 
     public function testGetStore(): void
@@ -105,6 +109,18 @@ class StoreServiceTest extends TestCase
             'test@store.com'
         );
 
+        $this->validator->expects($this->once())
+            ->method('validateStoreData')
+            ->with(
+                'Test Store',
+                '123 Main St',
+                'Test City',
+                'Test Country',
+                '12345',
+                '+1234567890',
+                'test@store.com'
+            );
+
         $this->repository->expects($this->once())
             ->method('save')
             ->willReturn($store);
@@ -124,7 +140,11 @@ class StoreServiceTest extends TestCase
 
     public function testCreateStoreWithInvalidData(): void
     {
-        $this->expectException(InvalidArgumentException::class);
+        $this->validator->expects($this->once())
+            ->method('validateStoreData')
+            ->willThrowException(new StoreValidationException('Store name is required'));
+
+        $this->expectException(StoreValidationException::class);
         $this->expectExceptionMessage('Store name is required');
 
         $this->service->createStore(
@@ -166,6 +186,18 @@ class StoreServiceTest extends TestCase
             ->method('findById')
             ->with(1)
             ->willReturn($store);
+
+        $this->validator->expects($this->once())
+            ->method('validateStoreData')
+            ->with(
+                'Updated Store',
+                '456 New St',
+                'New City',
+                'New Country',
+                '54321',
+                '+9876543210',
+                'new@store.com'
+            );
 
         $this->repository->expects($this->once())
             ->method('save')
@@ -237,9 +269,54 @@ class StoreServiceTest extends TestCase
         $this->service->deleteStore(1);
     }
 
+    public function testPatchStore(): void
+    {
+        $store = new Store(
+            null,
+            'Test Store',
+            '123 Main St',
+            'Test City',
+            'Test Country',
+            '12345',
+            '+1234567890',
+            'test@store.com'
+        );
+
+        $updatedStore = new Store(
+            null,
+            'Updated Store',
+            '123 Main St',
+            'Test City',
+            'Test Country',
+            '12345',
+            '+1234567890',
+            'test@store.com'
+        );
+
+        $this->repository->expects($this->once())
+            ->method('findById')
+            ->with(1)
+            ->willReturn($store);
+
+        $this->validator->expects($this->once())
+            ->method('validatePartialData')
+            ->with(['name' => 'Updated Store']);
+
+        $this->repository->expects($this->once())
+            ->method('save')
+            ->willReturn($updatedStore);
+
+        $result = $this->service->patchStore(1, ['name' => 'Updated Store']);
+        $this->assertSame($updatedStore, $result);
+    }
+
     public function testValidateStoreDataWithLongName(): void
     {
-        $this->expectException(InvalidArgumentException::class);
+        $this->validator->expects($this->once())
+            ->method('validateStoreData')
+            ->willThrowException(new StoreValidationException('Store name must not exceed 100 characters'));
+
+        $this->expectException(StoreValidationException::class);
         $this->expectExceptionMessage('Store name must not exceed 100 characters');
 
         $this->service->createStore(
@@ -255,7 +332,11 @@ class StoreServiceTest extends TestCase
 
     public function testValidateStoreDataWithLongAddress(): void
     {
-        $this->expectException(InvalidArgumentException::class);
+        $this->validator->expects($this->once())
+            ->method('validateStoreData')
+            ->willThrowException(new StoreValidationException('Store address must not exceed 200 characters'));
+
+        $this->expectException(StoreValidationException::class);
         $this->expectExceptionMessage('Store address must not exceed 200 characters');
 
         $this->service->createStore(
@@ -271,7 +352,11 @@ class StoreServiceTest extends TestCase
 
     public function testValidateStoreDataWithLongCountry(): void
     {
-        $this->expectException(InvalidArgumentException::class);
+        $this->validator->expects($this->once())
+            ->method('validateStoreData')
+            ->willThrowException(new StoreValidationException('Store country must not exceed 100 characters'));
+
+        $this->expectException(StoreValidationException::class);
         $this->expectExceptionMessage('Store country must not exceed 100 characters');
 
         $this->service->createStore(
@@ -287,7 +372,11 @@ class StoreServiceTest extends TestCase
 
     public function testValidateStoreDataWithLongPostalCode(): void
     {
-        $this->expectException(InvalidArgumentException::class);
+        $this->validator->expects($this->once())
+            ->method('validateStoreData')
+            ->willThrowException(new StoreValidationException('Store postal code must not exceed 20 characters'));
+
+        $this->expectException(StoreValidationException::class);
         $this->expectExceptionMessage('Store postal code must not exceed 20 characters');
 
         $this->service->createStore(
